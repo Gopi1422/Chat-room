@@ -102,11 +102,17 @@ Open any browser and run project on http://localhost
 # Features
 
 Authenticaton
+
 Real Time Chatting with Typing indicators
+
 One to One chat
+
 Search Users
+
 Create Group Chats
+
 Add or Remove users from group
+
 View Other user Profile
 
 
