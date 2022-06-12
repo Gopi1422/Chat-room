@@ -52,7 +52,27 @@ function SideDrawer() {
   const history = useHistory();
 
   const logoutHandler = () => {
+    // setLoading(true);
+    // const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    // const accessToken = JSON.parse(localStorage.getItem("accessToken"));
+    // const refreshToken = JSON.parse(localStorage.getItem("refreshToken"));
+
+    // if (userInfo) localStorage.removeItem("userInfo");
+    // if (accessToken) localStorage.removeItem("accessToken");
+    // if (refreshToken) localStorage.removeItem("refreshToken");
+
+    // toast({
+    //   title: `Logout Successful!!`,
+    //   status: "success",
+    //   duration: 5000,
+    //   isClosable: true,
+    //   position: "bottom",
+    // });
+    // setLoading(false);
+    // history.push("/");
     localStorage.removeItem("userInfo");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     history.push("/");
   };
 
@@ -73,7 +93,7 @@ function SideDrawer() {
 
       const config = {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.accessToken}`,
         },
       };
 
@@ -94,14 +114,14 @@ function SideDrawer() {
   };
 
   const accessChat = async (userId) => {
-    console.log(userId);
+    // console.log(userId);
 
     try {
       setLoadingChat(true);
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.accessToken}`,
         },
       };
       const { data } = await axios.post(`/api/chat`, { userId }, config);

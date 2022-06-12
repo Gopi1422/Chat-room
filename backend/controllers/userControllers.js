@@ -1,7 +1,5 @@
-const { authUser, registerUser, allUsers } = require("../Repository/forUser");
+const { allUsers } = require("../Repository/forUser");
 
-authUser;
-registerUser;
 allUsers;
 
-module.exports = { allUsers, registerUser, authUser };
+module.exports = { allUsers };

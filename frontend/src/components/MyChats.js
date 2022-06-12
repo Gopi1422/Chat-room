@@ -2,7 +2,7 @@ import { AddIcon } from "@chakra-ui/icons";
 import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getSender } from "../config/ChatLogics";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
@@ -10,9 +10,11 @@ import { Button } from "@chakra-ui/react";
 import { ChatState } from "../Context/ChatProvider";
 
 const MyChats = ({ fetchAgain }) => {
-  const [loggedUser, setLoggedUser] = useState();
+  // const [loggedUser, setLoggedUser] = useState();
+  const loggedUser = JSON.parse(localStorage.getItem("userInfo"));
 
-  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+  const { selectedChat, setSelectedChat, user, setUser, chats, setChats } =
+    ChatState();
 
   const toast = useToast();
 
@@ -21,7 +23,7 @@ const MyChats = ({ fetchAgain }) => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.accessToken}`,
         },
       };
 
@@ -40,10 +42,15 @@ const MyChats = ({ fetchAgain }) => {
   };
 
   useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+    // setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+    setUser(loggedUser);
     fetchChats();
     // eslint-disable-next-line
   }, [fetchAgain]);
+
+  // console.log(user._id);
+  // console.log(loggedUser);
+  // console.log(chats);
 
   return (
     <Box
@@ -100,6 +107,7 @@ const MyChats = ({ fetchAgain }) => {
                 borderRadius="lg"
                 key={chat._id}
               >
+                {/* {selectedChat?.users[1].name} */}
                 <Text>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)

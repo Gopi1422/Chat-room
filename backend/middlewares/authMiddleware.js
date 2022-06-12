@@ -1,47 +1,53 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
-const caller = require("../helpers/caller");
+const User = require("../models/userModel");
 
-const protect = asyncHandler(async (req, res, next) => {
-  let token;
-  let publicUrls = [
-    "http://localhost:5000/api/user/login",
-    "http://localhost:5000/api/user/",
-  ];
-  let currentUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
-  var Protected;
-  if (publicUrls.includes(currentUrl)) {
-    Protected = false;
-  } else {
-    Protected = true;
-  }
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer") &&
-    Protected
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
+const authenticateUser = asyncHandler(async (req, res, next) => {
+  const publicUrls = ["/auth/sendOtp", "/auth/verifyOtp", "/auth/refresh"];
 
-      //decodes token id
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const url = req.url;
 
-      req.user = await User.findById(decoded.id).select("-password");
-
-      next();
-    } catch (error) {
-      caller(req, res, "Not authorized, token failed", 401);
-    }
-  }
-
-  if (Protected === false) {
+  if (publicUrls.includes(url)) {
     next();
-  }
+  } else {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      try {
+        const authHeader = req.headers["authorization"];
+        const bearerToken = authHeader.split(" ");
+        const accessToken = bearerToken[1];
 
-  if (!token && Protected) {
-    caller(req, res, "Not authorized, no token", 401);
+        if (!accessToken) {
+          return res.status(401).send({ msg: `Not Authorized, No token!!` });
+        }
+
+        jwt.verify(
+          accessToken,
+          process.env.JWT_AUTH_TOKEN,
+          async (err, decodedData) => {
+            if (decodedData) {
+              const phone = decodedData.data;
+              req.user = await User.findOne({ phone: phone });
+              // console.log(phone);
+              next();
+            } else if (err.name === "TokenExpiredError") {
+              return res
+                .status(403)
+                .send({ success: false, msg: `Access Token Expired!!` });
+            } else {
+              // console.log("error....");
+              console.error(err);
+              res.status(403).send({ err, msg: `User not Authenticated!!` });
+            }
+          }
+        );
+      } catch (error) {
+        console.log(error.response);
+      }
+    }
   }
 });
 
-module.exports = { protect };
+module.exports = { authenticateUser };

@@ -51,9 +51,10 @@ const accessChat = asyncHandler(async (req, res) => {
 // {{URL}}/api/chat
 const fetchChats = asyncHandler(async (req, res) => {
   try {
+    // console.log(req.user._id);
     Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
-      .populate("users", "-password")
-      .populate("groupAdmin", "-password")
+      .populate("users")
+      .populate("groupAdmin")
       .populate("latestMessage")
       .sort({ updatedAt: -1 })
       .then(async (results) => {
@@ -149,7 +150,7 @@ const removeFromGroup = asyncHandler(async (req, res) => {
   if (!removed) {
     caller(req, res, "chat not found", 400);
   } else {
-    caller(req, res, "removed");
+    caller(req, res, removed);
   }
 });
 
@@ -174,7 +175,7 @@ const addToGroup = asyncHandler(async (req, res) => {
   if (!added) {
     caller(req, res, "Chat Not Found", 400);
   } else {
-    caller(req, res, "added");
+    caller(req, res, added);
   }
 });
 
