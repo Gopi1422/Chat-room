@@ -2,7 +2,12 @@
 
 A Full Stack Chatting App with OTP based(passwordless) authentication and uses Socket.io for real time communication.
 
-An application requires passwordless authentication backend module.
+An application uses 3 modules:
+1. Authentication Module
+2. Main(Chatroom) Module
+3. Frontend Module
+
+Nginx is used to integrate all these modules together.
 
 Link for authentication Module: 
 https://github.com/Gopi1422/SMS-based-Passwordless-Authentication.git
